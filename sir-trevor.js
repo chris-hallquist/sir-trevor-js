@@ -4,7 +4,7 @@
  * Released under the MIT license
  * www.opensource.org/licenses/MIT
  *
- * 2014-05-01
+ * 2014-05-19
  */
 
 (function ($, _){
@@ -2222,6 +2222,28 @@
       text : "i"
     });
   
+    var Color = SirTrevor.Formatter.extend({
+      title: "color",
+      cmd: "ForeColor",
+      text: "color",
+  
+      onClick: function() {
+        var color = prompt("Enter a color");
+        document.execCommand(this.cmd, false, color);
+      }
+    });
+  
+    var Image = SirTrevor.Formatter.extend({
+      title: "image",
+      cmd: "InsertImage",
+      text: "img",
+  
+      onClick: function() {
+        var url = prompt("Enter image url");
+        document.execCommand(this.cmd, false, url);
+      }
+    });
+  
     var Link = SirTrevor.Formatter.extend({
   
       title: "link",
@@ -2270,6 +2292,8 @@
     */
     SirTrevor.Formatters.Bold = new Bold();
     SirTrevor.Formatters.Italic = new Italic();
+    SirTrevor.Formatters.Color = new Color();
+    SirTrevor.Formatters.Image = new Image();
     SirTrevor.Formatters.Link = new Link();
     SirTrevor.Formatters.Unlink = new UnLink();
   
