@@ -120,6 +120,8 @@
   //= block_mixins
   //= block.positioner.js
   //= block.reorder.js
+  //= block.background.js
+  //= block.palette.js
   //= block.deletion.js
   //= block.validations.js
   //= block.store.js
