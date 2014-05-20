@@ -19,7 +19,7 @@ SirTrevor.BlockBackground = (function(){
 
   _.extend(BlockBackground.prototype, FunctionBind, Renderable, {
 
-    bound: ['onBlockCountChange', 'onSelectChange', 'toggle', 'show', 'hide'],
+    bound: ['onSelectChange', 'toggle', 'show', 'hide'],
 
     className: 'st-block-background',
     visibleClass: 'st-block-background--is-visible',
@@ -33,13 +33,6 @@ SirTrevor.BlockBackground = (function(){
       SirTrevor.EventBus.on(this.instanceID + ":blocks:count_update", this.onBlockCountChange);
     },
 
-    onBlockCountChange: function(new_count) {
-      if (new_count != this.total_blocks) {
-        this.total_blocks = new_count;
-        this.renderPositionList();
-      }
-    },
-
     onSelectChange: function() {
       var val = this.$select.val();
       if (val !== 0) {
@@ -47,14 +40,6 @@ SirTrevor.BlockBackground = (function(){
                                    this.$block, val, (val == 1 ? 'before' : 'after'));
         this.toggle();
       }
-    },
-
-    renderPositionList: function() {
-      var inner = "<option value='0'>" + i18n.t("general:position") + "</option>";
-      for(var i = 1; i <= this.total_blocks; i++) {
-        inner += "<option value="+i+">"+i+"</option>";
-      }
-      this.$select.html(inner);
     },
 
     toggle: function() {

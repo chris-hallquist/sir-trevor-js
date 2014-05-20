@@ -1,4 +1,4 @@
-SirTrevor.BlockPositioner = (function(){
+blockSirTrevor.BlockPositioner = (function(){
 
   var template = [
     "<div class='st-block-positioner__inner'>",
