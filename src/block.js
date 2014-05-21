@@ -275,20 +275,6 @@ SirTrevor.Block = (function(){
     */
 
     _initUIComponents: function() {
-      // DANGER ZONE: HALF-FINISHED CODE
-      
-      var background = new SirTrevor.BlockBackground(this.$el, this.instanceID);
-
-      this._withUIComponent(
-        background, '.st-block-ui-btn--palette', background.toggle
-      );
-
-      this._withUIComponent(
-        new SirTrevor.BlockPalette(this.$el)
-      );
-
-      // END DANGER ZONE
-
       var positioner = new SirTrevor.BlockPositioner(this.$el, this.instanceID);
 
       this._withUIComponent(
@@ -305,6 +291,19 @@ SirTrevor.Block = (function(){
 
       this.onFocus();
       this.onBlur();
+    },
+
+    _initCustomUI: function(classNames) {
+      var that = this;
+
+      classNames.forEach(function(className) {
+        that._withUIComponent(
+          new SirTrevor.CustomUIElement(that.$el, className)
+        );
+      });
+
+      this.onFocus(); // necessary?
+      this.onBlur();  // necessary?
     },
 
     _initFormatting: function() {

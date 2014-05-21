@@ -68,6 +68,10 @@ SirTrevor.Editor = (function(){
       this.fl_block_controls = new SirTrevor.FloatingBlockControls(this.$wrapper, this.ID);
       this.formatBar = new SirTrevor.FormatBar(this.options.formatBar);
 
+      if (this.options.customFormatters) { 
+        this.formatBar._addCustomFormatters(this.options.customFormatters); 
+      }
+
       this.listenTo(this.block_controls, 'createBlock', this.createBlock);
       this.listenTo(this.fl_block_controls, 'showBlockControls', this.showBlockControls);
 
@@ -194,6 +198,8 @@ SirTrevor.Editor = (function(){
       var block = new SirTrevor.Blocks[type](data, this.ID);
 
       this._renderInPosition(block.render().$el);
+
+      if (this.options.customUI) { block._initCustomUI(this.options.customUI); }
 
       this.listenTo(block, 'removeBlock', this.removeBlock);
 
@@ -534,4 +540,3 @@ SirTrevor.Editor = (function(){
   return SirTrevorEditor;
 
 })();
-

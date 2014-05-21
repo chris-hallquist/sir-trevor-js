@@ -97,6 +97,21 @@ SirTrevor.FormatBar = (function(){
 
       this.highlightSelectedButtons();
       return false;
+    },
+
+    _addCustomFormatters: function(formatNames) {
+      var that = this;
+
+      formatNames.forEach(function(formatName) {
+        SirTrevor.Formatters[formatName] = new SirTrevor.Formatter();
+        btn = $("<button>", {
+                'class': 'st-format-btn st-format-btn--' + formatName + ' st-icon',
+                'text': 'custom',
+                'data-type': formatName
+              });
+        that.$btns.push(btn);
+        btn.appendTo(that.$el);
+      });
     }
 
   });

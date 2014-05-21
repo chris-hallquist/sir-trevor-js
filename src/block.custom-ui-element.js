@@ -1,6 +1,7 @@
-SirTrevor.BlockPalette = (function(){
+SirTrevor.CustomUIElement = (function(){
 
-  var BlockPalette = function(block_element) {
+  var CustomUIElement = function(block_element, className) {
+    this.className = "st-block-ui-btn " + className
     this.$block = block_element;
     this.blockID = this.$block.attr('id');
 
@@ -10,19 +11,14 @@ SirTrevor.BlockPalette = (function(){
     this.initialize();
   };
 
-  _.extend(BlockPalette.prototype, FunctionBind, Renderable, {
+  _.extend(CustomUIElement.prototype, FunctionBind, Renderable, {
 
     bound: ['onMouseDown', 'onClick'],
 
-    className: 'st-block-ui-btn st-block-ui-btn--reorder st-icon',
     tagName: 'a',
 
     attributes: function() {
-      return {
-        'html': 'reorder',
-        'draggable': 'true',
-        'data-icon': 'move'
-      };
+      return {};
     },
 
     initialize: function() {
@@ -43,6 +39,6 @@ SirTrevor.BlockPalette = (function(){
 
   });
 
-  return BlockPalette;
+  return CustomUIElement;
 
 })();

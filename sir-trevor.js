@@ -4,7 +4,7 @@
  * Released under the MIT license
  * www.opensource.org/licenses/MIT
  *
- * 2014-05-19
+ * 2014-05-20
  */
 
 (function ($, _){
@@ -971,7 +971,7 @@
     }
   
   };
-  blockSirTrevor.BlockPositioner = (function(){
+  SirTrevor.BlockPositioner = (function(){
   
     var template = [
       "<div class='st-block-positioner__inner'>",
@@ -1137,71 +1137,10 @@
     return BlockReorder;
   
   })();
-  SirTrevor.BlockBackground = (function(){
+  SirTrevor.CustomUIElement = (function(){
   
-    var template = [
-      "<div class='st-block-background__inner'>",
-      "<p>Background Color: <input type='text' class='st-block-background__color'></p>",
-      "</div>"
-    ].join("\n");
-  
-    var BlockBackground = function(block_element, instance_id) {
-      this.$block = block_element;
-      this.instanceID = instance_id;
-      this.total_blocks = 0;
-  
-      this._ensureElement();
-      this._bindFunctions();
-  
-      this.initialize();
-    };
-  
-    _.extend(BlockBackground.prototype, FunctionBind, Renderable, {
-  
-      bound: ['onSelectChange', 'toggle', 'show', 'hide'],
-  
-      className: 'st-block-background',
-      visibleClass: 'st-block-background--is-visible',
-  
-      initialize: function(){
-        this.$el.append(template);
-        // this.$select = this.$('.st-block-positioner__select');
-  
-        // this.$select.on('change', this.onSelectChange);
-  
-        SirTrevor.EventBus.on(this.instanceID + ":blocks:count_update", this.onBlockCountChange);
-      },
-  
-      onSelectChange: function() {
-        var val = this.$select.val();
-        if (val !== 0) {
-          SirTrevor.EventBus.trigger(this.instanceID + ":blocks:change_position",
-                                     this.$block, val, (val == 1 ? 'before' : 'after'));
-          this.toggle();
-        }
-      },
-  
-      toggle: function() {
-        this.$select.val(0);
-        this.$el.toggleClass(this.visibleClass);
-      },
-  
-      show: function(){
-        this.$el.addClass(this.visibleClass);
-      },
-  
-      hide: function(){
-        this.$el.removeClass(this.visibleClass);
-      }
-  
-    });
-  
-    return BlockBackground;
-  
-  })();
-  SirTrevor.BlockPalette = (function(){
-  
-    var BlockPalette = function(block_element) {
+    var CustomUIElement = function(block_element, className) {
+      this.className = "st-block-ui-btn " + className
       this.$block = block_element;
       this.blockID = this.$block.attr('id');
   
@@ -1211,19 +1150,14 @@
       this.initialize();
     };
   
-    _.extend(BlockPalette.prototype, FunctionBind, Renderable, {
+    _.extend(CustomUIElement.prototype, FunctionBind, Renderable, {
   
       bound: ['onMouseDown', 'onClick'],
   
-      className: 'st-block-ui-btn st-block-ui-btn--reorder st-icon',
       tagName: 'a',
   
       attributes: function() {
-        return {
-          'html': 'reorder',
-          'draggable': 'true',
-          'data-icon': 'move'
-        };
+        return {};
       },
   
       initialize: function() {
@@ -1244,7 +1178,7 @@
   
     });
   
-    return BlockPalette;
+    return CustomUIElement;
   
   })();
   SirTrevor.BlockDeletion = (function(){
@@ -1807,20 +1741,6 @@
       */
   
       _initUIComponents: function() {
-        // DANGER ZONE: HALF-FINISHED CODE
-        
-        var background = new SirTrevor.BlockBackground(this.$el, this.instanceID);
-  
-        this._withUIComponent(
-          background, '.st-block-ui-btn--palette', background.toggle
-        );
-  
-        this._withUIComponent(
-          new SirTrevor.BlockPalette(this.$el)
-        );
-  
-        // END DANGER ZONE
-  
         var positioner = new SirTrevor.BlockPositioner(this.$el, this.instanceID);
   
         this._withUIComponent(
@@ -1837,6 +1757,19 @@
   
         this.onFocus();
         this.onBlur();
+      },
+  
+      _initCustomUI: function(classNames) {
+        var that = this;
+  
+        classNames.forEach(function(className) {
+          that._withUIComponent(
+            new SirTrevor.CustomUIElement(that.$el, className)
+          );
+        });
+  
+        this.onFocus(); // necessary?
+        this.onBlur();  // necessary?
       },
   
       _initFormatting: function() {
@@ -2345,28 +2278,6 @@
       text : "i"
     });
   
-    var Color = SirTrevor.Formatter.extend({
-      title: "color",
-      cmd: "ForeColor",
-      text: "color",
-  
-      onClick: function() {
-        var color = prompt("Enter a color");
-        document.execCommand(this.cmd, false, color);
-      }
-    });
-  
-    var Image = SirTrevor.Formatter.extend({
-      title: "image",
-      cmd: "InsertImage",
-      text: "img",
-  
-      onClick: function() {
-        var url = prompt("Enter image url");
-        document.execCommand(this.cmd, false, url);
-      }
-    });
-  
     var Link = SirTrevor.Formatter.extend({
   
       title: "link",
@@ -2415,8 +2326,6 @@
     */
     SirTrevor.Formatters.Bold = new Bold();
     SirTrevor.Formatters.Italic = new Italic();
-    SirTrevor.Formatters.Color = new Color();
-    SirTrevor.Formatters.Image = new Image();
     SirTrevor.Formatters.Link = new Link();
     SirTrevor.Formatters.Unlink = new UnLink();
   
@@ -2702,6 +2611,21 @@
   
         this.highlightSelectedButtons();
         return false;
+      },
+  
+      _addCustomFormatters: function(formatNames) {
+        var that = this;
+  
+        formatNames.forEach(function(formatName) {
+          SirTrevor.Formatters[formatName] = new SirTrevor.Formatter();
+          btn = $("<button>", {
+                  'class': 'st-format-btn st-format-btn--' + formatName + ' st-icon',
+                  'text': 'custom',
+                  'data-type': formatName
+                });
+          that.$btns.push(btn);
+          btn.appendTo(that.$el);
+        });
       }
   
     });
@@ -2778,6 +2702,10 @@
         this.block_controls = new SirTrevor.BlockControls(this.blockTypes, this.ID);
         this.fl_block_controls = new SirTrevor.FloatingBlockControls(this.$wrapper, this.ID);
         this.formatBar = new SirTrevor.FormatBar(this.options.formatBar);
+  
+        if (this.options.customFormatters) { 
+          this.formatBar._addCustomFormatters(this.options.customFormatters); 
+        }
   
         this.listenTo(this.block_controls, 'createBlock', this.createBlock);
         this.listenTo(this.fl_block_controls, 'showBlockControls', this.showBlockControls);
@@ -2905,6 +2833,8 @@
         var block = new SirTrevor.Blocks[type](data, this.ID);
   
         this._renderInPosition(block.render().$el);
+  
+        if (this.options.customUI) { block._initCustomUI(this.options.customUI); }
   
         this.listenTo(block, 'removeBlock', this.removeBlock);
   
@@ -3245,7 +3175,6 @@
     return SirTrevorEditor;
   
   })();
-  
 
   /* We need a form handler here to handle all the form submits */
   SirTrevor.setDefaults = function(options) {
